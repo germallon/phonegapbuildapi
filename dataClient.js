@@ -16,7 +16,7 @@
 
 var 
 TOKEN_FILE_LOC = __dirname + '/metadata/token.json',
-USER_FILE_LOC = __dirname + '/metadata/user.json',
+USER_FILE_LOC = __dirname + '/metadata/me.json',
 
 getToken = function(){
    var fs = require('fs'),
@@ -24,7 +24,6 @@ getToken = function(){
    buffer = null, 
    jsonBuffer = null;
    if(!path.existsSync(TOKEN_FILE_LOC)){
-      console.log("Error: The token file @ " + TOKEN_FILE_LOC + " does not exist. Run " + __dirname + "/createToken.sh to generate an authentication token file.");
       return null;
    }
    buffer = fs.readFileSync(TOKEN_FILE_LOC);
@@ -34,7 +33,7 @@ getToken = function(){
 
 getUser = function()
    {
-   fs = require('fs'),
+   var fs = require('fs'),
    path = require('path'),
    buffer = null, 
    jsonBuffer = null;
@@ -50,18 +49,33 @@ getUser = function()
 getApps = function()
    {
    var user = getUser();
-   if (!user)
-      {
+   if (!user){
       console.log("Error: Could not retrieve user data.");
       return null;
       }
    return user.apps;
+   },
+   
+getAppIdList = function()
+   {
+   var result = [];
+   var apps = getApps();
+   if((!apps)||(!apps.all)){
+      console.log("Error: Could not retrieve apps data.");
+      return result;
+      }
+   for(var i=0; i<apps.all.length; i++){
+      result.push(apps.all[i].id);
+      }
+   
+   return result;
+   
    }
 ;
 
 module.exports = {
    getToken: getToken,
-   getAppIntNameFromId: getAppIntNameFromId,
    getUser: getUser,
-   getApps: getApps
+   getApps: getApps,
+   getAppIdList: getAppIdList
 };
