@@ -17,7 +17,7 @@ The client uses the authentication token for all requests.  Therefore, you must 
   node createToken.js
 </pre>
 
-An simple example driver has been included to help you understand how to run the tool (example.js).  You can write your own driver to make the tool fit your own needs, and fully interact with the Phonegap API.  
+A simple example driver has been included to help you understand how to run the tool (example.js).  You can write your own driver to make the tool fit your own needs, and fully interact with the Phonegap API.  
 
 ### The authentication token will be saved in the metadata folder.  We are looking for better ways to store this information, without creating additional dependencies.  In the meantime, please protect your data.
 
