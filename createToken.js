@@ -60,11 +60,13 @@ rlInterface.question("Please enter your Phonegap Build username: ", function(inp
             {
             console.log("AJAX error.  Your request could not be completed. Please verify your login credentials and network access.");   
             terminate();
+            return;
             }
          var fs = require('fs'),
          createDirAndWriteFile = function(){
             fs.mkdirSync(METADATA_DIR, 0777);
             fs.writeFileSync(OUTPUT_FILE, body, 'utf8');
+            console.info("Authentication token created succesfully!");
          };
          
          try{
@@ -73,6 +75,7 @@ rlInterface.question("Please enter your Phonegap Build username: ", function(inp
                var stats =  fs.lstatSync(METADATA_DIR);
                if(stats.isDirectory()){ //Directory exists.. Ready to write file
                   fs.writeFileSync(OUTPUT_FILE, body, 'utf8');
+                  console.info("Authentication token created succesfully!");
                }
                else{
                   createDirAndWriteFile();
