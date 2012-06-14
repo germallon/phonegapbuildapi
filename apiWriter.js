@@ -67,8 +67,8 @@ postMultipart = function(postData, boundary, apiCall){
    
    request = https.request(options, function(response){
       response.on('data', function(chunk){
-         //TODO:  Do something w/ response data
-      })
+         //TODO:  Do something w/ response data. Save at least appId for future use
+      });
    });
    
    for( i=0; i<postData.length; i++){
@@ -96,11 +96,59 @@ initMultipartUpload = function(inputFile, reqData, apiCall){
       });
 },
 
-createApp = function(inputFile, dataObj){
+ 
+ /******************************************************************
+ *
+ *  Create a new File-based App.
+ *  
+ *  Required parameters
+ *  
+ *  title: You must specify a title for your app - if a title is also 
+ *         specified in a config.xml in your package, the one in the 
+ *         config.xml file will take preference.
+ *  create_method: use "file" for this method
+ *  
+ *  Optional parameters
+ *  
+ *  package: Sets the package identifier for your app. This can also be 
+ *           done after creation, or in your config.xml file. 
+ *           Defaults to com.phonegap.www
+ *  version: Sets the version of your app. This can also be done after 
+ *           creation, or in your config.xml file. Defaults to 0.0.1
+ *  description: Sets the description for your app. This can also be 
+ *               done after creation, or in your config.xml file. 
+ *               Defaults to empty.
+ *  debug: Builds your app in debug mode. Defaults to false.
+ *  keys: Set the signing keys to use for each platform you wish to sign. 
+ *  private: Whether your app can be publicly downloaded. Defaults to 
+ *           true during beta period; will default to false once the 
+ *           beta period is complete
+ *  phonegap_version: Which version of PhoneGap your app uses. See 
+ *                    config.xml for details on which are supported, 
+ *                    and which one is currently the default
+ *  
+ * File-backed applications
+ * 
+ * To create a file-backed application, set the create_method parameter 
+ * to file, and include a zip file, a tar.gz file, or an index.html 
+ * file in the multipart body of your post, with the parameter name file.
+ * 
+ *    POST https://build.phonegap.com/api/v1/apps
+ *****************************************************************/ 
+createFileBasedApp = function(inputFile, dataObj){
    initMultipartUpload(inputFile, dataObj, 'apps');
 },
 
-updateAppFromFile = function(inputFile, appId){
+/******************************************************************
+ *    Updating a file-based application
+ *    
+ *    If the application has been created from a file upload, you 
+ *    can include a new index.html, zip file, or tar.gz file as the 
+ *    file parameter in your request to update the contents.
+ *   
+ *    PUT https://build.phonegap.com/api/v1/apps/:id
+ *****************************************************************/
+updateFileBasedApp = function(inputFile, appId){
    var fs = require('fs'),
    dataClient = require('.dataClient'),
    
@@ -112,6 +160,6 @@ updateAppFromFile = function(inputFile, appId){
 
 
 module.exports = {
-   createApp:createApp,
-   updateAppFromFile:updateAppFromFile
+   createFileBasedApp:createFileBasedApp,
+   updateFileBasedApp:updateFileBasedApp
 };
