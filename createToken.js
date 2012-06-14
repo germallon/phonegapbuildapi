@@ -56,14 +56,35 @@ rlInterface.question("Please enter your Phonegap Build username: ", function(inp
          }; 
       
       req.post(options, function (error, response, body) {
-         
          if((error!==null) || (response.statusCode!=200))
             {
             console.log("AJAX error.  Your request could not be completed. Please verify your login credentials and network access.");   
             terminate();
             }
-         var fs = require('fs');
-         fs.writeFileSync(OUTPUT_FILE, body, 'utf8');
+         var fs = require('fs'),
+         createDirAndWriteFile = function(){
+            fs.mkdirSync(METADATA_DIR, 0777);
+            fs.writeFileSync(OUTPUT_FILE, body, 'utf8');
+         };
+         
+         try{
+            var path = require('path');
+            if(path.existsSync(METADATA_DIR)){
+               var stats =  fs.lstatSync(METADATA_DIR);
+               if(stats.isDirectory()){ //Directory exists.. Ready to write file
+                  fs.writeFileSync(OUTPUT_FILE, body, 'utf8');
+               }
+               else{
+                  createDirAndWriteFile();
+               }
+            }
+            else{ //Directory does not exists. Create directory and then write file.
+               createDirAndWriteFile();
+            }
+         }catch(e){
+            console.log(e);
+            console.log("File System Error.  Please ensure you have write permissions in " + METADATA_DIR);
+         }
          
          terminate();
          }
