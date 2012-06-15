@@ -17,7 +17,7 @@
 
 var 
    URL = 'https://build.phonegap.com',
-   METADATA_DIR = __dirname + '/metadata',
+   METADATA_DIR = __dirname + '/.cache',
    OUTPUT_FILE = METADATA_DIR + '/token.json',
    req = require('request'),
    rl = require('readline'),

@@ -16,8 +16,9 @@
  **************************************************************************/
 
 var 
-TOKEN_FILE_LOC = __dirname + '/metadata/token.json',
-USER_FILE_LOC = __dirname + '/metadata/me.json',
+METADATA_DIR = __dirname+'/.cache',
+TOKEN_FILE_LOC = METADATA_DIR + 'token.json',
+USER_FILE_LOC = METADATA_DIR + '/me.json',
 
 getToken = function(){
    var fs = require('fs'),

@@ -16,7 +16,7 @@
  **************************************************************************/
 
 var 
-METADATA_DIR = __dirname + '/metadata',
+METADATA_DIR = __dirname + '/.cache',
 
 dataClient = require('./dataClient'),
 
