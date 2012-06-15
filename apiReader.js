@@ -54,17 +54,9 @@ getApiData = function(token, apiCall, callback){
 downloadFile = function(url, outputFilepath, callback){
    var req = require('request'),
    fs = require('fs');
-   req.get(url).pipe(fs.createWriteStream(outputFilepath)).on('close', callback.success);//.on('end', function(){console.info("Detected end of stream"); callback.success();});
-   
-//   writeStream.on('error', function(e){
-//      console.info("Error writing ")
-//      console.log("I/O Err. Message: " + e.message);
-//      if(callback.error && (callback.error instanceof Function)){callback.error(e.message);}
-//   });
-   
-   
-   
-   
+   req.get(url).pipe(fs.createWriteStream(outputFilepath))
+   .on('error', function(e){callback.error(e.message);})
+   .on('close', callback.success);
 },
    
 /******************************************************************

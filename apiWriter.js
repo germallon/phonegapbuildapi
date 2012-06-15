@@ -41,17 +41,11 @@ encodeFileHeader = function(boundary, type, name, filename){
 },
 
 
-postMultipart = function(postData, boundary, apiCall){
+postMultipart = function(token, postData, boundary, apiCall, callback){
    var 
-   token = dataClient.getToken(),
    len = 0, i=0,
    options = null, 
    request = null;
-   
-   if(!token){
-      console.log("Error: Unknown authentication token.");
-      return;    
-      }
    
    for( i=0; i<postData.length; i++){
       len += postData[i].length;
@@ -68,8 +62,15 @@ postMultipart = function(postData, boundary, apiCall){
    };
    
    request = _https.request(options, function(response){
+      var replyData = '';
       response.on('data', function(chunk){
-         //TODO:  Do something w/ response data. Save at least appId for future use
+         replyData+= chunk;
+      });
+      response.on('end', function(){
+         callback.success(replyData);
+      });
+      response.on('error', function(e){
+         callback.erro(e.message);
       });
    });
    
@@ -80,7 +81,7 @@ postMultipart = function(postData, boundary, apiCall){
    
 },
 
-initMultipartUpload = function(inputFile, reqData, apiCall){
+initMultipartUpload = function(token, inputFile, reqData, apiCall, callback){
    var  
    boundary = 'bound' + Math.random(),
    postData = [], 
@@ -94,7 +95,7 @@ initMultipartUpload = function(inputFile, reqData, apiCall){
    fileReader.on('end', function(){
       postData.push(new Buffer(fileContents, 'binary'));
       postData.push(new Buffer("\r\n--" + boundary + "--", 'ascii'));
-      postMultipart(postData, boundary, apiCall);
+      postMultipart(token, postData, boundary, apiCall, callback);
       });
 },
 
@@ -137,8 +138,8 @@ initMultipartUpload = function(inputFile, reqData, apiCall){
  * 
  *    POST https://build.phonegap.com/api/v1/apps
  *****************************************************************/ 
-createFileBasedApp = function(inputFile, dataObj){
-   initMultipartUpload(inputFile, dataObj, 'apps');
+createFileBasedApp = function(token, inputFile, dataObj, callback){
+   initMultipartUpload(token, inputFile, dataObj, 'apps', callback);
 },
 
 /******************************************************************
@@ -150,10 +151,13 @@ createFileBasedApp = function(inputFile, dataObj){
  *   
  *    PUT https://build.phonegap.com/api/v1/apps/:id
  *****************************************************************/
-updateFileBasedApp = function(inputFile, appId){
+updateFileBasedApp = function(token, inputFile, appId, callback){
    _req = require('request'),
    apiPath = '/api/v1/apps/' + appId + '?auth_token=' + token;
-   _fs.createReadStream(inputFile).pipe(req.put('https://build.phonegap.com' + apiPath));
+   _fs.createReadStream(inputFile).pipe(req.put('https://build.phonegap.com' + apiPath))
+   .on('error', function(e){callback.error(e.message);})
+   .on('close', callback.success);
+   
 },
 
 createToken = function(rawCredentials, callback){
