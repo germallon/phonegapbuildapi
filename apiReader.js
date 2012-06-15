@@ -16,37 +16,34 @@
  **************************************************************************/
 
 var 
-METADATA_DIR = __dirname + '/.cache',
-
-dataClient = require('./dataClient'),
+_URL = 'build.phonegap.com',
 
 
 /******************************************************************
  * Executes the GET Phonegap API call,
  * and writes the output in a JSON-formatted file
  ******************************************************************/
-getApiData = function(apiCall, outputFile){
+getApiData = function(token, apiCall, callback){
    var
-   token = dataClient.getToken(),
    https = require('https'), 
    options = null;
-   if(!token){
-      console.log("Error: Unknown authentication token.");
-      return;
-      }
-
+   
    options = {
-      host: 'build.phonegap.com',
+      host: _URL,
       path: '/api/v1/' + apiCall + '?auth_token='+token
       };
    
    https.get(options, function(res){
+      var replyData = '';
       res.on('data', function(data){
-         var fs = require('fs');
-         fs.writeFileSync(outputFile, data, 'utf8');
+         replyData+= data;
+         });
+      res.on('end', function(){
+         callback.success(JSON.parse(replyData));
          });
       }).on('error', function(e){
          console.log("AJAX Err. Message: " + e.message);
+         if(callback.error && (callback.error instanceof Function)){callback.error(e.message);}
       });
    },
 
@@ -54,11 +51,21 @@ getApiData = function(apiCall, outputFile){
  * Downloads the file at the given URL and saves it in the provided
  * path.
  ******************************************************************/   
-downloadFile = function(url, outputFilepath){
+downloadFile = function(url, outputFilepath, callback){
    var req = require('request'),
    fs = require('fs');
-   req.get(url).pipe(fs.createWriteStream(outputFilepath));
-   },
+   req.get(url).pipe(fs.createWriteStream(outputFilepath)).on('close', callback.success);//.on('end', function(){console.info("Detected end of stream"); callback.success();});
+   
+//   writeStream.on('error', function(e){
+//      console.info("Error writing ")
+//      console.log("I/O Err. Message: " + e.message);
+//      if(callback.error && (callback.error instanceof Function)){callback.error(e.message);}
+//   });
+   
+   
+   
+   
+},
    
 /******************************************************************
  *  Get a JSON-encoded representation of the authenticated user, 
@@ -70,8 +77,8 @@ downloadFile = function(url, outputFilepath){
  *  
  *  GET https://build.phonegap.com/api/v1/me 
  *****************************************************************/   
-getUser = function(){
-   getApiData('me', METADATA_DIR + '/me.json');
+getUser = function(token, callback){
+   getApiData(token, 'me', callback);
 },
 
 /******************************************************************
@@ -84,8 +91,8 @@ getUser = function(){
  *  
  *  GET https://build.phonegap.com/api/v1/apps 
  *****************************************************************/ 
-getApps = function(){
-   getApiData('apps', METADATA_DIR + '/apps.json');
+getApps = function(token, callback){
+   getApiData(token, 'apps', callback);
    },
 
    
@@ -108,8 +115,8 @@ getApps = function(){
  *  
  *  GET https://build.phonegap.com/api/v1/apps/:id 
  *****************************************************************/
-getAppById = function(appId){
-   getApiData('apps/' + appId, METADATA_DIR + '/app_' + appId + '.json');
+getAppById = function(token, appId, callback){
+   getApiData(token, 'apps/' + appId, callback);
    },
 
 /******************************************************************
@@ -121,8 +128,8 @@ getAppById = function(appId){
  *  
  *  GET https://build.phonegap.com/api/v1/keys 
  *****************************************************************/
-getKeys = function(){
-   getApiData('keys', METADATA_DIR + '/keys.json');
+getKeys = function(token, callback){
+   getApiData(token, 'keys', callback);
    },
    
    
@@ -168,20 +175,9 @@ getPlatformKeyById = function(platform, appId){
  *  
  *  GET https://build.phonegap.com/api/v1/apps/:id/:platform 
  *****************************************************************/
-downloadApp = function(appId, platform, outputFilepath){
-   var tools = require('./tools'),
-   token = dataClient.getToken(),
-   url = null;
-   
-   if(!token){
-      console.log("Error: Unknown authentication token.");
-      return;
-      } 
-   if(!outputFilepath){ //set default name if output file is not given
-      outputFilepath = './' + platform + "_ " + appId + "." + tools.getExtByPlatform(platform);
-      } 
-   url= 'https://build.phonegap.com/api/v1/apps/' + appId + '/' + platform + '?auth_token='+token;
-   downloadFile(url, outputFilepath);
+downloadApp = function(token, appId, platform, outputFilepath, callback){
+   var url= 'https://' + _URL + '/api/v1/apps/' + appId + '/' + platform + '?auth_token='+token;
+   downloadFile(url, outputFilepath, callback);
    },
    
 /*****************************************************************
@@ -191,19 +187,9 @@ downloadApp = function(appId, platform, outputFilepath){
  * 
  * GET https://build.phonegap.com/api/v1/apps/:id/:icon
 *****************************************************************/
-downloadIcon = function(appId, outputFilepath){
-   var token = dataClient.getToken(),
-   url = null;
-   
-   if(!token){
-      console.log("Error: Unknown authentication token.");
-      return;
-      } 
-   if(!outputFilepath){ //set default name if output file is not given
-      outputFilepath = './icon_' + appId; //unknown extension
-      }
-   url= 'https://build.phonegap.com/api/v1/apps/' + appId + '/icon';
-   downloadFile(url, outputFilepath);
+downloadIcon = function(token, appId, outputFilepath, callback){
+   var url= 'https://' + _URL + '/api/v1/apps/' + appId + '/icon';
+   downloadFile(url, outputFilepath, callback);
    }
    ;
 

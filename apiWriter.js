@@ -16,10 +16,11 @@
  **************************************************************************/
 
 var 
-fs = require('fs'),
-https = require('https'),
-dataClient = require('./dataClient'),
-mime = require('mime'),
+_fs = require('fs'),
+_https = require('https'),
+_mime = require('mime'),
+_req = require('request'),
+_URL = 'build.phonegap.com'
 
 encodeFieldHeader = function(boundary, name, value){
    var result = [
@@ -57,7 +58,7 @@ postMultipart = function(postData, boundary, apiCall){
    }
    
    options = {
-      host: 'build.phonegap.com',
+      host: _URL,
       path: '/api/v1/' + apiCall + '?auth_token='+token,
       method: 'POST',
       headers:{
@@ -66,7 +67,7 @@ postMultipart = function(postData, boundary, apiCall){
       }
    };
    
-   request = https.request(options, function(response){
+   request = _https.request(options, function(response){
       response.on('data', function(chunk){
          //TODO:  Do something w/ response data. Save at least appId for future use
       });
@@ -87,8 +88,8 @@ initMultipartUpload = function(inputFile, reqData, apiCall){
    fileContents = '';
    
    postData.push(new Buffer(encodeFieldHeader(boundary, "data", JSON.stringify(reqData)), 'ascii'));
-   postData.push(new Buffer(encodeFileHeader(boundary, mime.lookup(inputFile), "file", inputFile), 'ascii'));
-   fileReader = fs.createReadStream(inputFile, {encoding: 'binary'});
+   postData.push(new Buffer(encodeFileHeader(boundary, _mime.lookup(inputFile), "file", inputFile), 'ascii'));
+   fileReader = _fs.createReadStream(inputFile, {encoding: 'binary'});
    fileReader.on('data', function(fileData){ fileContents+= fileData;});
    fileReader.on('end', function(){
       postData.push(new Buffer(fileContents, 'binary'));
@@ -150,17 +151,35 @@ createFileBasedApp = function(inputFile, dataObj){
  *    PUT https://build.phonegap.com/api/v1/apps/:id
  *****************************************************************/
 updateFileBasedApp = function(inputFile, appId){
-   var fs = require('fs'),
-   dataClient = require('.dataClient'),
-   
-   token = dataClient.getToken(), //TODO:  Use file extraction instead
-   req = require('request'),
+   _req = require('request'),
    apiPath = '/api/v1/apps/' + appId + '?auth_token=' + token;
-   fs.createReadStream(inputFile).pipe(req.put('https://build.phonegap.com' + apiPath));
-};
+   _fs.createReadStream(inputFile).pipe(req.put('https://build.phonegap.com' + apiPath));
+},
+
+createToken = function(rawCredentials, callback){
+   var
+   auth = "Basic " + new Buffer(rawCredentials).toString("base64"),
+   options = {  
+      url : 'https://'+_URL+"/token",    
+      headers : { "Authorization" : auth } 
+      }; 
+   
+   _req.post(options, function (error, response, body) {
+      if((error!==null) || (response.statusCode!=200))
+         {
+         var errStr = "AJAX error.  Your request could not be completed. Please verify your login credentials and network access.  statusCode: " + response.statusCode;
+         if(JSON.parse(body) && JSON.parse(body).error){errStr +="\n" + JSON.parse(body).error;}
+         callback.error(errStr);
+         return;
+         }
+      callback.success(JSON.parse(body).token);
+      });
+}
+;
 
 
 module.exports = {
    createFileBasedApp:createFileBasedApp,
-   updateFileBasedApp:updateFileBasedApp
+   updateFileBasedApp:updateFileBasedApp,
+   createAuthToken: createToken,
 };
