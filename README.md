@@ -12,5 +12,9 @@
 ##Description
 Phonegap Build JS is a client interface for the Phonegap Build API.  Given that the API interacts using JSON-formatted strings, Javascript seems like the logical choice to process its input and output.
 
-A simple example driver has been included to help you understand how to run the tool (example.js).  You can write your own driver to make the tool fit your own needs, and fully interact with the Phonegap API.  
+A commandline interface that partially implements the API has been provided.  
+<pre>
+   node interface.js
+</pre>
 
+The interace allows you to interact with the API, but it is mainly provided to serve as an example on how to use the tool.  You are encouraged to implement your own driver that fits your needs.
