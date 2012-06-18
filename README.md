@@ -17,4 +17,4 @@ A commandline interface that partially implements the API has been provided.
    node interface.js
 </pre>
 
-The interace allows you to interact with the API, but it is mainly provided to serve as an example on how to use the tool.  You are encouraged to implement your own driver that fits your needs.
+The interface allows you to interact with the API, but it is mainly provided to serve as an example on how to use the tool.  You are encouraged to implement your own driver that fits your needs.

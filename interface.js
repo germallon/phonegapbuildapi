@@ -48,6 +48,7 @@ doMenuOption = function (menuOption){
    var i;
    switch(menuOption){
       case _MENU.getUserData.idx:
+      
          _apiReader.getUserData(_token, {success: function(data){
             console.log(data);
             showMenu();
@@ -55,12 +56,14 @@ doMenuOption = function (menuOption){
          break;
          
       case _MENU.getAppsData.idx:
+      
          _apiReader.getAppsData(_token, {success: function(data){
             console.log(data);
             showMenu();
             }, error: stdErrorHandler});
          break;
       case _MENU.getAppDataById.idx:
+      
          _program.prompt("App ID: ", function(appId){
             _apiReader.getAppDataById(_token, appId, {success: function(data){
                console.log(data);
@@ -69,12 +72,14 @@ doMenuOption = function (menuOption){
          });
          break;
       case _MENU.getKeysData.idx:
+      
          _apiReader.getKeysData(_token, {success: function(data){
             console.log(data);
             showMenu();
             }, error: stdErrorHandler});
          break;
       case _MENU.downloadApp.idx:
+      
          _program.prompt("App ID: ", function(appId){
             
             var platformList=[], platformKeys = Object.keys(_PLATFORMLIST);
