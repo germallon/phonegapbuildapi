@@ -70,7 +70,7 @@ postMultipart = function(token, postData, boundary, apiCall, callback){
          callback.success(replyData);
       });
       response.on('error', function(e){
-         callback.erro(e.message);
+         callback.error(e.message);
       });
    });
    
