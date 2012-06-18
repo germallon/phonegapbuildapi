@@ -1,10 +1,10 @@
 var 
+   _apiReader = require('./apiReader'),
+   _apiWriter = require('./apiWriter'),
    _program = require('commander'),
    _req = require('request'),
-   _apiReader = require('./apiReader'),
-   
    URL = 'https://build.phonegap.com',
-   
+      
    _MENU = 
       {
       getUserData: {name: "Get User Data", idx: 0},
@@ -26,13 +26,16 @@ var
    
    _token = null,
    
-/*
- * Ends the program
- */
+/******************************************************************
+ * Gracefully ends the program, relinquishing control of std input
+ *****************************************************************/
 quit = function(){
    process.stdin.destroy();
 },
 
+/******************************************************************
+ * Standard Error handler. Prints error message (if any) on stdout
+ *****************************************************************/
 stdErrorHandler = function(errorMsg){
    if(errorMsg){
       console.log(errorMsg);
@@ -43,7 +46,9 @@ stdErrorHandler = function(errorMsg){
    showMenu();
 },
 
-
+/******************************************************************
+ * Processes user's menu selection
+ *****************************************************************/
 doMenuOption = function (menuOption){
    var i;
    switch(menuOption){
@@ -111,6 +116,9 @@ doMenuOption = function (menuOption){
    }
 }
 
+/******************************************************************
+ * Displays Menu
+ *****************************************************************/
 showMenu = function(){
    
    console.log('\n\nPlease choose one of the following options');
@@ -122,39 +130,41 @@ showMenu = function(){
    });
 },
 
+/******************************************************************
+ * Executes login by requesting an authentication token from the server
+ *****************************************************************/
 doLogin = function(loginCredentials){
-   auth = "Basic " + new Buffer(loginCredentials).toString("base64");
-   options = {  
-      url : URL+"/token",    
-      headers : { "Authorization" : auth } 
-      }; 
-   
-   _req.post(options, function (error, response, body) {
-      if((error!==null) || (response.statusCode!=200))
-         {
-         console.log("AJAX error.  Your request could not be completed. Please verify your login credentials and network access.");   
-         quit();
-         return;
-         }
+   _apiWriter.createToken(loginCredentials, {success: function(token){
       _token = JSON.parse(body).token;
       showMenu();
-   });
+      }, 
+      error: function(errMsg){
+         stdErrorHandler(errmsg);
+         quit();
+      }});
 },
 
-/*Gets login credentials */
+/***************************************************
+ * Prompts user for login credentials
+ ****************************************************/
 getLoginCredentials = function(){
    _program.prompt("Phonegap Build Username: ", function(username){
       _program.password("Password: ", "*", function(password){
-         pwd = password.trim();
-         doLogin(username+":"+password);
+         doLogin(username.trim()+":"+password.trim());
       });
    });
 },
 
-init = function(){
+/************************************************************
+ * Initialize the program when no options have been selected
+ ***********************************************************/
+stdInit = function(){
    getLoginCredentials();
 };
 
+/*
+ * Program Starts here!
+ */
 _program
    .version('0.0.1')
    .option('-u, --user <username:pwd>', 'Specify login credentials', String, '')
@@ -164,7 +174,7 @@ if(_program.user){
    doLogin(_program.user);
 }
 else{
-   init();
+   stdInit();
 }
 
 
