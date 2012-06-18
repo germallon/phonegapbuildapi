@@ -134,8 +134,8 @@ showMenu = function(){
  * Executes login by requesting an authentication token from the server
  *****************************************************************/
 doLogin = function(loginCredentials){
-   _apiWriter.createToken(loginCredentials, {success: function(token){
-      _token = JSON.parse(body).token;
+   _apiWriter.createAuthToken(loginCredentials, {success: function(token){
+      _token = token;
       showMenu();
       }, 
       error: function(errMsg){
