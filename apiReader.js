@@ -39,7 +39,12 @@ getApiData = function(token, apiCall, callback){
          replyData+= data;
          });
       res.on('end', function(){
-         callback.success(JSON.parse(replyData));
+         if(callback instanceof Function){
+            callback(JSON.parse(replyData));
+            }
+         else if (callback.success instanceof Function){
+            callback.success(JSON.parse(replyData));
+            }
          });
       }).on('error', function(e){
          console.log("AJAX Err. Message: " + e.message);
@@ -52,11 +57,13 @@ getApiData = function(token, apiCall, callback){
  * path.
  ******************************************************************/   
 downloadFile = function(url, outputFilepath, callback){
+   var successCallback = (callback instanceof Function)? callback: (callback.success instanceof Function)? callback.success: function(){};
+   var errCallback = (callback.error instanceof Function)? callback.error: function(){};
    var req = require('request'),
    fs = require('fs');
    req.get(url).pipe(fs.createWriteStream(outputFilepath))
-   .on('error', function(e){callback.error(e.message);})
-   .on('close', callback.success);
+      .on('error', function(e){errCallback(e.message);})
+      .on('close', function(){successCallback(outputFilepath)});
 },
    
 /******************************************************************
@@ -169,6 +176,7 @@ getPlatformKeyById = function(platform, appId){
  *****************************************************************/
 downloadApp = function(token, appId, platform, outputFilepath, callback){
    var url= 'https://' + _URL + '/api/v1/apps/' + appId + '/' + platform + '?auth_token='+token;
+   console.info("\n\nStarting Download...");
    downloadFile(url, outputFilepath, callback);
    },
    

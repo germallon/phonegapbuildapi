@@ -1,9 +1,9 @@
 var 
    _program = require('commander'),
    _req = require('request'),
-   _dataClient = require('./dataClient');
+   _apiReader = require('./apiReader'),
+   
    URL = 'https://build.phonegap.com',
-   _outputFile, 
    
    _MENU = 
       {
@@ -13,7 +13,16 @@ var
       getKeysData: {name: "Get Keys Data", idx: 3},
       downloadApp: {name: "Download App", idx: 4},
       quit:  {name: "Quit", idx: 5}
-      }
+      },
+      
+   _PLATFORMLIST = {
+      android:    {name:"android", idx: 0},
+      blackberry: {name:"blackberry", idx: 1},
+      ios:        {name:"ios", idx: 2},
+      symbian:    {name:"symbian", idx: 3},
+      webos:      {name:"webos", idx: 4},
+      winphone:   {name:"winphone", idx: 5}
+   },
    
    _token = null,
    
@@ -24,25 +33,76 @@ quit = function(){
    process.stdin.destroy();
 },
 
+stdErrorHandler = function(errorMsg){
+   if(errorMsg){
+      console.log(errorMsg);
+   }
+   else{
+      console.log("Unknown Error");
+   }
+   showMenu();
+},
+
+
 doMenuOption = function (menuOption){
+   var i;
    switch(menuOption){
-   case _MENU.getUserData.idx:
-      _dataClient.getUserData(_token, );      
-      break;
-   case getAppsData.idx:
-      break;
-   case getAppDataById.idx:
-      break;
-   case getKeysData.idx:
-      break;
-   case downloadApp.idx:
-      break;
-   case _MENU.quit.idx:
-      quit();
-      break;
-   default:
-      showMenu();
-      break;
+      case _MENU.getUserData.idx:
+         _apiReader.getUserData(_token, {success: function(data){
+            console.log(data);
+            showMenu();
+            }, error: stdErrorHandler});
+         break;
+         
+      case _MENU.getAppsData.idx:
+         _apiReader.getAppsData(_token, {success: function(data){
+            console.log(data);
+            showMenu();
+            }, error: stdErrorHandler});
+         break;
+      case _MENU.getAppDataById.idx:
+         _program.prompt("App ID: ", function(appId){
+            _apiReader.getAppDataById(_token, appId, {success: function(data){
+               console.log(data);
+               showMenu();
+               }, error: stdErrorHandler});
+         });
+         break;
+      case _MENU.getKeysData.idx:
+         _apiReader.getKeysData(_token, {success: function(data){
+            console.log(data);
+            showMenu();
+            }, error: stdErrorHandler});
+         break;
+      case _MENU.downloadApp.idx:
+         _program.prompt("App ID: ", function(appId){
+            
+            var platformList=[], platformKeys = Object.keys(_PLATFORMLIST);
+            for(i=0; i<platformKeys.length; i++){platformList.push(_PLATFORMLIST[platformKeys[i]].name);}
+            
+            console.log('\nPlatform:');
+            _program.choose(platformList, function(platformIdx){
+            
+               _program.prompt("Output filepath: ", function(outFpath){
+                  _apiReader.downloadApp(_token, appId, platformList[platformIdx], outFpath, {success: function(data){
+                     console.log("File successfully downloaded to: " + data);
+                     showMenu();
+                     }, error: stdErrorHandler});
+                  });
+               });
+            
+            });
+            
+            
+      
+      
+         break;
+      case _MENU.quit.idx:
+         quit();
+         break;
+      default:
+         showMenu();
+         break;
    }
 }
 
