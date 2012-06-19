@@ -31,7 +31,7 @@ Here's an example on how to display the user data on standard output:
  
          reader.getUserData(token, {
             success:function(userData){
-               console.log(userData); //Output user data to stdin
+               console.log(userData); //Output user data to stdout
                }, 
             error: function(errMsg){
                console.log("Error retrieving user data. Err: " + errMsg);
