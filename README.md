@@ -17,4 +17,29 @@ A commandline interface that partially implements the API has been provided.
    node interface.js
 </pre>
 
-The interface allows you to interact with the API, but it is mainly provided to serve as an example on how to use the tool.  You are encouraged to implement your own driver that fits your needs.
+The interface allows you to interact with the API, but it is mainly provided to serve as an example on how to use the tool.  You are encouraged to implement your own driver that fits your needs.  Simply include the needed modules in your script.  
+
+Here's an example on how to display the user data on standard output:
+
+<pre>
+   var reader = require('./apiReader');
+   var writer = require('./apiWriter');
+
+   writer.createAuthToken("my@email.com:myp4ssw0rd", {
+
+      success:function(token){
+ 
+         reader.getUserData(token, {
+            success:function(userData){
+               console.log(userData); //Output user data to stdin
+               }, 
+            error: function(errMsg){
+               console.log("Error retrieving user data. Err: " + errMsg);
+               }});         
+         }, 
+ 
+      error: function(errmsg){
+         console.log("Error creating authentication token. Err: " + errMsg);
+         }});
+</pre>
+
