@@ -39,7 +39,7 @@ Here's an example on how to display the user data on standard output:
          }, 
  
       error: function(errmsg){
-         console.log("Error creating authentication token. Err: " + errMsg);
+         console.log("Error creating authentication token. Err: " + errmsg);
          }});
 </pre>
 
