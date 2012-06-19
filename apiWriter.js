@@ -152,9 +152,8 @@ createFileBasedApp = function(token, inputFile, dataObj, callback){
  *    PUT https://build.phonegap.com/api/v1/apps/:id
  *****************************************************************/
 updateFileBasedApp = function(token, inputFile, appId, callback){
-   _req = require('request'),
-   apiPath = '/api/v1/apps/' + appId + '?auth_token=' + token;
-   _fs.createReadStream(inputFile).pipe(req.put('https://build.phonegap.com' + apiPath))
+   var apiPath = '/api/v1/apps/' + appId + '?auth_token=' + token;
+   _fs.createReadStream(inputFile).pipe(_req.put('https://build.phonegap.com' + apiPath))
    .on('error', function(e){callback.error(e.message);})
    .on('close', callback.success);
    
@@ -176,6 +175,27 @@ updateFileBasedApp = function(token, inputFile, appId, callback){
 uploadAppIcon = function(token, appId, inputFile, callback){
    initMultipartUpload(token, inputFile, null, 'apps/' + appId + "/icon", "icon", callback);
 },
+
+/******************************************************************
+ * POST https://build.phonegap.com/api/v1/apps/:id/build
+ * 
+ * Queue new builds for a specified app. The older builds will be 
+ * discarded, while new ones are queued.
+ * The builds will use the most current app contents, as well as 
+ * the selected signing keys. The response will have a 202 (accepted) 
+ * status.
+ * 
+ * To choose which platforms to build, include those as a JSON encoded 
+ * parameter in your post
+ * 
+ * Once the builds are queued, you will want to watch the results of 
+ * GET /api/v1/apps/:id to see when each platform's status changes 
+ * from pending (to complete or error).
+ * 
+ ******************************************************************/
+//rebuildApp = function(token, appId, dataObj, callback){
+//   
+//},
 
 createToken = function(rawCredentials, callback){
    var
@@ -203,5 +223,6 @@ module.exports = {
    createFileBasedApp:createFileBasedApp,
    updateFileBasedApp:updateFileBasedApp,
    uploadAppIcon: uploadAppIcon,
+//   rebuildApp: rebuildApp,
    createAuthToken: createToken,
 };
