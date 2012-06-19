@@ -81,15 +81,15 @@ postMultipart = function(token, postData, boundary, apiCall, callback){
    
 },
 
-initMultipartUpload = function(token, inputFile, reqData, apiCall, callback){
+initMultipartUpload = function(token, inputFile, reqData, apiCall, fieldName, callback){
    var  
    boundary = 'bound' + Math.random(),
    postData = [], 
    fileReader = null,
    fileContents = '';
    
-   postData.push(new Buffer(encodeFieldHeader(boundary, "data", JSON.stringify(reqData)), 'ascii'));
-   postData.push(new Buffer(encodeFileHeader(boundary, _mime.lookup(inputFile), "file", inputFile), 'ascii'));
+   if(reqData){postData.push(new Buffer(encodeFieldHeader(boundary, "data", JSON.stringify(reqData)), 'ascii'))};
+   postData.push(new Buffer(encodeFileHeader(boundary, _mime.lookup(inputFile), fieldName, inputFile), 'ascii'));
    fileReader = _fs.createReadStream(inputFile, {encoding: 'binary'});
    fileReader.on('data', function(fileData){ fileContents+= fileData;});
    fileReader.on('end', function(){
@@ -139,7 +139,7 @@ initMultipartUpload = function(token, inputFile, reqData, apiCall, callback){
  *    POST https://build.phonegap.com/api/v1/apps
  *****************************************************************/ 
 createFileBasedApp = function(token, inputFile, dataObj, callback){
-   initMultipartUpload(token, inputFile, dataObj, 'apps', callback);
+   initMultipartUpload(token, inputFile, dataObj, 'apps', "file", callback);
 },
 
 /******************************************************************
@@ -158,6 +158,23 @@ updateFileBasedApp = function(token, inputFile, appId, callback){
    .on('error', function(e){callback.error(e.message);})
    .on('close', callback.success);
    
+},
+
+/******************************************************************
+ * POST https://build.phonegap.com/api/v1/apps/:id/:icon
+ * 
+ * Sets an icon file for a given app. Send a png file as the icon 
+ * parameter in your post.
+ * If you want to have multiple icons for different resolutions, you 
+ * should not use this API method. Instead, include the different 
+ * icon files in your application package and specify their use 
+ * in your config.xml file.
+ * 
+ * The response will have a 201 created status, and the 
+ * application will be queued for building.
+******************************************************************/
+uploadAppIcon = function(token, appId, inputFile, callback){
+   initMultipartUpload(token, inputFile, null, 'apps/' + appId + "/icon", "icon", callback);
 },
 
 createToken = function(rawCredentials, callback){
@@ -185,5 +202,6 @@ createToken = function(rawCredentials, callback){
 module.exports = {
    createFileBasedApp:createFileBasedApp,
    updateFileBasedApp:updateFileBasedApp,
+   uploadAppIcon: uploadAppIcon,
    createAuthToken: createToken,
 };
