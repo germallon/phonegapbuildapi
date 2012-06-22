@@ -1,8 +1,11 @@
+#!/usr/bin/env node
+
 var 
    _apiReader = require('./apiReader'),
    _apiWriter = require('./apiWriter'),
    _program = require('commander'),
    _req = require('request'),
+   _tools = require('./tools'),
    URL = 'https://build.phonegap.com',
       
    _MENU = 
@@ -15,15 +18,6 @@ var
       quit:  {name: "Quit", idx: 5}
       },
       
-   _PLATFORMLIST = {
-      android:    {name:"android", idx: 0},
-      blackberry: {name:"blackberry", idx: 1},
-      ios:        {name:"ios", idx: 2},
-      symbian:    {name:"symbian", idx: 3},
-      webos:      {name:"webos", idx: 4},
-      winphone:   {name:"winphone", idx: 5}
-   },
-   
    _token = null,
    
 /******************************************************************
@@ -87,8 +81,8 @@ doMenuOption = function (menuOption){
       
          _program.prompt("App ID: ", function(appId){
             
-            var platformList=[], platformKeys = Object.keys(_PLATFORMLIST);
-            for(i=0; i<platformKeys.length; i++){platformList.push(_PLATFORMLIST[platformKeys[i]].name);}
+            var platformList=[], platformKeys = Object.keys(_tools.platforms);
+            for(i=0; i<platformKeys.length; i++){platformList.push(_tools.platforms[platformKeys[i]].name);}
             
             console.log('\nPlatform:');
             _program.choose(platformList, function(platformIdx){
@@ -102,9 +96,6 @@ doMenuOption = function (menuOption){
                });
             
             });
-            
-            
-      
       
          break;
       case _MENU.quit.idx:
@@ -139,7 +130,7 @@ doLogin = function(loginCredentials){
       showMenu();
       }, 
       error: function(errMsg){
-         stdErrorHandler(errmsg);
+         stdErrorHandler(errMsg);
          quit();
       }});
 },

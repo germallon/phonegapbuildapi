@@ -76,7 +76,7 @@ downloadFile = function(url, outputFilepath, callback){
  *  
  *  GET https://build.phonegap.com/api/v1/me 
  *****************************************************************/   
-getUser = function(token, callback){
+_getUserData = function(token, callback){
    getApiData(token, 'me', callback);
 },
 
@@ -90,7 +90,7 @@ getUser = function(token, callback){
  *  
  *  GET https://build.phonegap.com/api/v1/apps 
  *****************************************************************/ 
-getApps = function(token, callback){
+_getAppsData = function(token, callback){
    getApiData(token, 'apps', callback);
    },
 
@@ -114,7 +114,7 @@ getApps = function(token, callback){
  *  
  *  GET https://build.phonegap.com/api/v1/apps/:id 
  *****************************************************************/
-getAppById = function(token, appId, callback){
+_getAppDataById = function(token, appId, callback){
    getApiData(token, 'apps/' + appId, callback);
    },
 
@@ -127,7 +127,7 @@ getAppById = function(token, appId, callback){
  *  
  *  GET https://build.phonegap.com/api/v1/keys 
  *****************************************************************/
-getKeys = function(token, callback){
+_getKeysData = function(token, callback){
    getApiData(token, 'keys', callback);
    },
    
@@ -139,7 +139,7 @@ getKeys = function(token, callback){
  *  
  *  GET https://build.phonegap.com/api/v1/keys/:platform 
  *****************************************************************/
-getPlatformKeys = function(platform){
+_getPlatformKeys = function(platform){
    getApiData('keys/' + platform, METADATA_DIR + '/keys_' + platform + '.json');
    },
    
@@ -148,7 +148,7 @@ getPlatformKeys = function(platform){
  *  
  *  GET https://build.phonegap.com/api/v1/keys/:platform/:appId 
  *****************************************************************/
-getPlatformKeyById = function(platform, appId){
+_getPlatformKeyById = function(platform, appId){
    getApiData('keys/' + platform + '/' + appId, METADATA_DIR + '/keys_' + platform + '_' + appId + '.json');
    },
 
@@ -174,7 +174,7 @@ getPlatformKeyById = function(platform, appId){
  *  
  *  GET https://build.phonegap.com/api/v1/apps/:id/:platform 
  *****************************************************************/
-downloadApp = function(token, appId, platform, outputFilepath, callback){
+_downloadApp = function(token, appId, platform, outputFilepath, callback){
    var url= 'https://' + _URL + '/api/v1/apps/' + appId + '/' + platform + '?auth_token='+token;
    console.info("\n\nStarting Download...");
    downloadFile(url, outputFilepath, callback);
@@ -187,7 +187,7 @@ downloadApp = function(token, appId, platform, outputFilepath, callback){
  * 
  * GET https://build.phonegap.com/api/v1/apps/:id/:icon
 *****************************************************************/
-downloadIcon = function(token, appId, outputFilepath, callback){
+_downloadIcon = function(token, appId, outputFilepath, callback){
    var url= 'https://' + _URL + '/api/v1/apps/' + appId + '/icon';
    downloadFile(url, outputFilepath, callback);
    }
@@ -197,9 +197,12 @@ downloadIcon = function(token, appId, outputFilepath, callback){
  *  Module Public Members
  *****************************************************************/
 module.exports = {
-   getUserData: getUser,
-   getAppsData: getApps,
-   getAppDataById: getAppById,
-   getKeysData: getKeys,
-   downloadApp: downloadApp
+   getUserData: _getUserData,
+   getAppsData: _getAppsData,
+   getAppDataById: _getAppDataById,
+   getKeysData: _getKeysData,
+   getPlatformKeys:_getPlatformKeys,
+   getPlatformKeyById: _getPlatformKeyById,
+   downloadApp: _downloadApp,
+   downloadIcon:_downloadIcon
 };

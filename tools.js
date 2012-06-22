@@ -15,24 +15,37 @@
  * limitations under the License.
  **************************************************************************/
 
+var
+_platforms = {
+         android:    {name:"android", ext: 'apk', idx: 0},
+         blackberry: {name:"blackberry", ext: 'jad', idx: 1}, //signed. Extension for unsigned blackberry applications is 'zip'
+         ios:        {name:"ios", ext: 'ipa', idx: 2},
+         symbian:    {name:"symbian", ext: 'wgz', idx: 3},
+         webos:      {name:"webos", ext: 'ipk', idx: 4},
+         winphone:   {name:"winphone", ext: 'xap', idx: 5}
+},
 /*
  * Returns The extension for the given platform
  */
-var getExtByPlatform = function(platform){
+_getExtByPlatform = function(platformName){
    var result = 'ext'; //default extension
-   if(platform){ //prevent errors
-   switch(platform){
-      case 'android': result = 'apk'; break;
-      case 'blackberry': result = 'jad'; break;//unsigned. Extension for unsigned blackberry applications is 'zip'
-      case 'ios': result = 'ipa'; break;
-      case 'symbian': result = 'wgz'; break;
-      case 'webos': result = 'ipk'; break;
-      case 'winphone': result = 'xap'; break;
-      }
+   if(platformName){ //prevent errors
+      switch(platformName){
+         case 'android':
+         case 'blackberry':
+         case 'ios':
+         case 'symbian':
+         case 'webos':
+         case 'winphone':
+            result = _platforms[platformName].ext; 
+            break;
+         }
    }
    return result;
-};
+}
+;
 
 module.exports = {
-   getExtByPlatform: getExtByPlatform
+   platforms: _platforms,
+   getExtByPlatform: _getExtByPlatform
 };

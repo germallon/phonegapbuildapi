@@ -138,7 +138,7 @@ initMultipartUpload = function(token, inputFile, reqData, apiCall, fieldName, ca
  * 
  *    POST https://build.phonegap.com/api/v1/apps
  *****************************************************************/ 
-createFileBasedApp = function(token, inputFile, dataObj, callback){
+_createFileBasedApp = function(token, inputFile, dataObj, callback){
    initMultipartUpload(token, inputFile, dataObj, 'apps', "file", callback);
 },
 
@@ -151,7 +151,7 @@ createFileBasedApp = function(token, inputFile, dataObj, callback){
  *   
  *    PUT https://build.phonegap.com/api/v1/apps/:id
  *****************************************************************/
-updateFileBasedApp = function(token, inputFile, appId, callback){
+_updateFileBasedApp = function(token, inputFile, appId, callback){
    var apiPath = '/api/v1/apps/' + appId + '?auth_token=' + token;
    _fs.createReadStream(inputFile).pipe(_req.put('https://build.phonegap.com' + apiPath))
    .on('error', function(e){callback.error(e.message);})
@@ -172,7 +172,7 @@ updateFileBasedApp = function(token, inputFile, appId, callback){
  * The response will have a 201 created status, and the 
  * application will be queued for building.
 ******************************************************************/
-uploadAppIcon = function(token, appId, inputFile, callback){
+_uploadAppIcon = function(token, appId, inputFile, callback){
    initMultipartUpload(token, inputFile, null, 'apps/' + appId + "/icon", "icon", callback);
 },
 
@@ -197,7 +197,7 @@ uploadAppIcon = function(token, appId, inputFile, callback){
 //   
 //},
 
-createToken = function(rawCredentials, callback){
+_createAuthToken = function(rawCredentials, callback){
    var
    auth = "Basic " + new Buffer(rawCredentials).toString("base64"),
    options = {  
@@ -220,9 +220,8 @@ createToken = function(rawCredentials, callback){
 
 
 module.exports = {
-   createFileBasedApp:createFileBasedApp,
-   updateFileBasedApp:updateFileBasedApp,
-   uploadAppIcon: uploadAppIcon,
-//   rebuildApp: rebuildApp,
-   createAuthToken: createToken,
+   createFileBasedApp:_createFileBasedApp,
+   updateFileBasedApp:_updateFileBasedApp,
+   uploadAppIcon: _uploadAppIcon,
+   createAuthToken: _createAuthToken,
 };
