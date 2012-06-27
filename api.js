@@ -372,6 +372,40 @@ _uploadAppIcon = function(token, appId, inputFile, callback){
 },
 
 /******************************************************************
+ * 
+ * DELETE https://build.phonegap.com/api/v1/apps/:id
+ * 
+ * Delete your application from PhoneGap Build - will return either
+ * a 202 (accepted) status, or 404 (if the app cannot be found).
+ *****************************************************************/
+_deleteFileBasedApp = function(token, appId, callback){
+   var options = {  
+      url : 'https://'+_URL+"/api/v1/apps/" + appId + '?auth_token=' + token
+      }; 
+      
+   _req.del(options, function (error, response, body) {
+      if(error){
+         if(callback instanceof Function){
+            callback("Error deleting app " + appId);
+            }
+         else if(callback.error instanceof Function){
+            callback.error("Error deleting app " + appId);
+            }
+         }
+      else{
+      
+         if(callback instanceof Function){
+            callback(body);
+            }
+         else if(callback.success instanceof Function){
+            callback.success(body);
+            }
+      }
+   });
+   
+},
+
+/******************************************************************
  * POST https://build.phonegap.com/api/v1/apps/:id/build
  * 
  * Queue new builds for a specified app. The older builds will be 
@@ -438,5 +472,6 @@ module.exports = {
    createFileBasedApp:_createFileBasedApp,
    updateFileBasedApp:_updateFileBasedApp,
    uploadAppIcon: _uploadAppIcon,
+   deleteFileBasedApp: _deleteFileBasedApp,
    createAuthToken: _createAuthToken
 };
