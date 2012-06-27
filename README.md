@@ -1,6 +1,6 @@
 # PHONEGAP BUILD JS
  
-### A client interface for the Phonegap Build API using javascript
+### A client interface for the Phonegap Build API using nodejs
 
 ## Install
 
@@ -17,16 +17,14 @@ Or from source:
 </pre>
 
 ##Description
-Phonegap Build JS is a client interface for the Phonegap Build API.  Given that the API interacts using JSON-formatted strings, Javascript seems like the logical choice to process its input and output.
+Phonegap Build API is a client interface for the Phonegap Build API (Duh!).  Given that the API interacts using JSON-formatted strings, Javascript seems like the logical choice to process its input and output.
 
 A commandline interface that partially implements the API has been provided.  
 <pre>
    node interface.js
 </pre>
 
-The interface allows you to interact with the API, but it is mainly provided to serve as an example on how to use the tool.  You are encouraged to implement your own driver that fits your needs.  Simply include the needed modules in your script.  
-
-
+The interface allows you to interact with the API, but it is mainly provided to serve as an example on how to use the tool.  You are encouraged to implement your own driver that fits your needs.  
 
 ##Examples
 Here's an example on how to display the user data on standard output:
