@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
 var 
-   _apiReader = require('./apiReader'),
-   _apiWriter = require('./apiWriter'),
+   _api = require('./phonegapbuildapi'),
    _program = require('commander'),
    _req = require('request'),
    _tools = require('./tools'),
@@ -48,7 +47,7 @@ doMenuOption = function (menuOption){
    switch(menuOption){
       case _MENU.getUserData.idx:
       
-         _apiReader.getUserData(_token, {success: function(data){
+         _api.getUserData(_token, {success: function(data){
             console.log(data);
             showMenu();
             }, error: stdErrorHandler});
@@ -56,7 +55,7 @@ doMenuOption = function (menuOption){
          
       case _MENU.getAppsData.idx:
       
-         _apiReader.getAppsData(_token, {success: function(data){
+         _api.getAppsData(_token, {success: function(data){
             console.log(data);
             showMenu();
             }, error: stdErrorHandler});
@@ -64,7 +63,7 @@ doMenuOption = function (menuOption){
       case _MENU.getAppDataById.idx:
       
          _program.prompt("App ID: ", function(appId){
-            _apiReader.getAppDataById(_token, appId, {success: function(data){
+            _api.getAppDataById(_token, appId, {success: function(data){
                console.log(data);
                showMenu();
                }, error: stdErrorHandler});
@@ -72,7 +71,7 @@ doMenuOption = function (menuOption){
          break;
       case _MENU.getKeysData.idx:
       
-         _apiReader.getKeysData(_token, {success: function(data){
+         _api.getKeysData(_token, {success: function(data){
             console.log(data);
             showMenu();
             }, error: stdErrorHandler});
@@ -88,7 +87,7 @@ doMenuOption = function (menuOption){
             _program.choose(platformList, function(platformIdx){
             
                _program.prompt("Output filepath: ", function(outFpath){
-                  _apiReader.downloadApp(_token, appId, platformList[platformIdx], outFpath, {success: function(data){
+                  _api.downloadApp(_token, appId, platformList[platformIdx], outFpath, {success: function(data){
                      console.log("File successfully downloaded to: " + data);
                      showMenu();
                      }, error: stdErrorHandler});
@@ -125,7 +124,7 @@ showMenu = function(){
  * Executes login by requesting an authentication token from the server
  *****************************************************************/
 doLogin = function(loginCredentials){
-   _apiWriter.createAuthToken(loginCredentials, {success: function(token){
+   _api.createAuthToken(loginCredentials, {success: function(token){
       _token = token;
       showMenu();
       }, 

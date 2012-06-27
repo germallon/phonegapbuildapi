@@ -22,11 +22,10 @@ The interface allows you to interact with the API, but it is mainly provided to 
 Here's an example on how to display the user data on standard output:
 
 <pre>
-   var reader = require('./apiReader');
-   var writer = require('./apiWriter');
+   var api = require('phonegapbuildapi');
 
-   writer.createAuthToken("my@email.com:myp4ssw0rd", function(token){
-      reader.getUserData(token, function(userData){
+   api.createAuthToken("my@email.com:myp4ssw0rd", function(token){
+      api.getUserData(token, function(userData){
          console.log(userData); //Output user data to stdout
          });         
       });
@@ -37,14 +36,13 @@ Here's an example on how to display the user data on standard output:
 Error handling is supported through callbacks.  The above example can be expanded to handle any errors found.
 
 <pre>
-   var reader = require('./apiReader');
-   var writer = require('./apiWriter');
+   var api = require('phonegapbuildapi');
 
-   writer.createAuthToken("my@email.com:myp4ssw0rd", {
+   api.createAuthToken("my@email.com:myp4ssw0rd", {
 
       success:function(token){
  
-         reader.getUserData(token, {
+         api.getUserData(token, {
             success:function(userData){
                console.log(userData); //Output user data to stdout
                }, 

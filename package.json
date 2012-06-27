@@ -1,0 +1,19 @@
+{ "name" : "phonegapbuildapi"
+, "description" : "A client interface for the Phonegap Build API."
+, "tags" : ["phonegap", "phonegap build", "phonegap build api", "api client"]
+, "version" : "1.0.0"
+, "author" : "German Escallon <germane@adtecinc.com>",
+, "homepage" : "http://github.com/germallon/phonegapbuildapi",
+, "dependencies:{
+      "request": "git://github.com/mikeal/request.git#9746bb4d00851c060d4d20a6860b25101fad1ba5",
+      "mime": "git://github.com/broofa/node-mime.git#640f377e2bdc926e4c5bf47ca0b8aa6767699ed3"
+   }   
+, "repository" :
+  { "type" : "git"
+  , "url" : "http://github.com/germallon/phonegapbuildapi.git"
+  }
+, "bugs" :
+  { "url" : "http://github.com/mikeal/phonegapbuildapi/issues" }
+, "engines" : ["node >= 1.2.6"]
+, "main": "./api"
+}
