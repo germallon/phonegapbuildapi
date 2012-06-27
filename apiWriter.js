@@ -67,10 +67,19 @@ postMultipart = function(token, postData, boundary, apiCall, callback){
          replyData+= chunk;
       });
       response.on('end', function(){
-         callback.success(replyData);
+         if(callback instanceof Function){
+            callback(replyData);         
+            }
+         else if(callback.success instanceof Function){
+            callback.success(replyData);
+            }
+         return;
       });
       response.on('error', function(e){
-         callback.error(e.message);
+         if(callback.error instanceof Function){
+            callback.error(e.message);
+            }
+         return;
       });
    });
    
@@ -154,8 +163,15 @@ _createFileBasedApp = function(token, inputFile, dataObj, callback){
 _updateFileBasedApp = function(token, inputFile, appId, callback){
    var apiPath = '/api/v1/apps/' + appId + '?auth_token=' + token;
    _fs.createReadStream(inputFile).pipe(_req.put('https://build.phonegap.com' + apiPath))
-   .on('error', function(e){callback.error(e.message);})
-   .on('close', callback.success);
+   .on('error', function(e){if(callback.error instanceof Function){callback.error(e.message);}})
+   .on('end', function(){
+      if(callback instanceof Function){
+         callback();
+         }
+      else if (callback.success instanceof Function){
+         callback.success();
+         } 
+      });
    
 },
 
@@ -210,10 +226,15 @@ _createAuthToken = function(rawCredentials, callback){
          {
          var errStr = "AJAX error.  Your request could not be completed. Please verify your login credentials and network access.  statusCode: " + response.statusCode;
          if(JSON.parse(body) && JSON.parse(body).error){errStr +="\n" + JSON.parse(body).error;}
-         callback.error(errStr);
+         if(callback.error instanceof Function){callback.error(errStr);}
          return;
          }
-      callback.success(JSON.parse(body).token);
+      if(callback instanceof Function){
+         callback(JSON.parse(body).token);
+         }
+      else if(callback.success instanceof Function){
+         callback.success(JSON.parse(body).token);
+         }
       });
 }
 ;
