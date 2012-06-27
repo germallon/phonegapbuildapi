@@ -27,6 +27,8 @@ A commandline interface that partially implements the API has been provided.
 The interface allows you to interact with the API, but it is mainly provided to serve as an example on how to use the tool.  You are encouraged to implement your own driver that fits your needs.  
 
 ##Examples
+
+###Simple Example
 Here's an example on how to display the user data on standard output:
 
 <pre>
@@ -39,7 +41,7 @@ Here's an example on how to display the user data on standard output:
       });
 </pre>
 
-##Error Handling
+###Error Handling
 
 Error handling is supported through callbacks.  The above example can be expanded to handle any errors found.
 
