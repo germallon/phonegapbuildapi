@@ -449,7 +449,7 @@ _createAuthToken = function(rawCredentials, callback){
          callback.success(JSON.parse(body).token);
          }
       });
-}
+};
    
    
 
