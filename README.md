@@ -25,6 +25,21 @@ Here's an example on how to display the user data on standard output:
    var reader = require('./apiReader');
    var writer = require('./apiWriter');
 
+   writer.createAuthToken("my@email.com:myp4ssw0rd", function(token){
+      reader.getUserData(token, function(userData){
+         console.log(userData); //Output user data to stdout
+         });         
+      });
+</pre>
+
+##Error Handling
+
+Error handling is supported through callbacks.  The above example can be expanded to handle any errors found.
+
+<pre>
+   var reader = require('./apiReader');
+   var writer = require('./apiWriter');
+
    writer.createAuthToken("my@email.com:myp4ssw0rd", {
 
       success:function(token){
