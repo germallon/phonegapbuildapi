@@ -17,7 +17,7 @@ Or from source:
 </pre>
 
 ##Description
-Phonegap Build API is a client interface for the Phonegap Build API (Duh!).  Given that the API interacts using JSON-formatted strings, Javascript seems like the logical choice to process its input and output.
+Phonegap Build API is a client interface for the <a href="https://build.phonegap.com/docs/api">Phonegap Build API</a> (Duh!).  Given that the API interacts using JSON-formatted strings, Javascript seems like the logical choice to process its input and output.
 
 A commandline interface that partially implements the API has been provided.  
 <pre>
