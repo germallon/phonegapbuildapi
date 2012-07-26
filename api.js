@@ -21,7 +21,6 @@ _fs = require('fs'),
 _https = require('https'),
 _mime = require('mime'),
 _req = require('request'),
-_URL = 'build.phonegap.com'
 
 /******************************************************************
  * Executes the GET Phonegap API call,
