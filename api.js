@@ -22,7 +22,7 @@ _https = require('https'),
 _mime = require('mime'),
 _req = require('request'),
 _util = require('util'),
-_URL = 'build.phonegap.com'
+_URL = 'build.phonegap.com';
 
 /******************************************************************
  * Executes the GET Phonegap API call,
@@ -54,7 +54,7 @@ getApiData = function(token, apiCall, callback){
          console.log("AJAX Err. Message: " + e.message);
          if(callback.error && (callback.error instanceof Function)){callback.error(e.message);}
       });
-   },
+   };
 
 /******************************************************************
  * Downloads the file at the given URL and saves it in the provided
@@ -66,8 +66,8 @@ downloadFile = function(url, outputFilepath, callback){
    
    _req.get(url).pipe(_fs.createWriteStream(outputFilepath))
       .on('error', function(e){errCallback(e.message);})
-      .on('close', function(){successCallback(outputFilepath)});
-},
+      .on('close', function(){successCallback(outputFilepath);});
+};
    
 /******************************************************************
  *  Get a JSON-encoded representation of the authenticated user, 
@@ -144,7 +144,7 @@ _getKeysData = function(token, callback){
  *****************************************************************/
 _getPlatformKeys = function(platform){
    getApiData('keys/' + platform, METADATA_DIR + '/keys_' + platform + '.json');
-   },
+   };
    
 /******************************************************************
  *  Get a JSON-encoded representation of a single signing key.
@@ -153,7 +153,7 @@ _getPlatformKeys = function(platform){
  *****************************************************************/
 _getPlatformKeyById = function(platform, appId){
    getApiData('keys/' + platform + '/' + appId, METADATA_DIR + '/keys_' + platform + '_' + appId + '.json');
-   },
+   };
 
 /******************************************************************
  *  Download the app package for the given platform; available 
@@ -181,7 +181,7 @@ _downloadApp = function(token, appId, platform, outputFilepath, callback){
    var url= 'https://' + _URL + '/api/v1/apps/' + appId + '/' + platform + '?auth_token='+token;
    console.info("\n\nStarting Download...");
    downloadFile(url, outputFilepath, callback);
-   },
+   };
    
 /*****************************************************************
  * Get the main icon associated with an app - this is either the 
@@ -193,7 +193,7 @@ _downloadApp = function(token, appId, platform, outputFilepath, callback){
 _downloadIcon = function(token, appId, outputFilepath, callback){
    var url= 'https://' + _URL + '/api/v1/apps/' + appId + '/icon';
    downloadFile(url, outputFilepath, callback);
-   },
+   };
    
 /************************************
  * Init Write API
@@ -206,10 +206,10 @@ encodeFieldHeader = function(boundary, name, value){
    var result = [
      "--" + boundary + "\r\n",
      "Content-Disposition: form-data; name=\"", 
-     "" + name + "\"\r\n\r\n" + value + "\r\n",
+     "" + name + "\"\r\n\r\n" + value + "\r\n"
      ].join("");
    return result;
-},
+};
 
 encodeFileHeader = function(boundary, type, name, filename){
    var result = [
@@ -218,7 +218,7 @@ encodeFileHeader = function(boundary, type, name, filename){
       "Content-Type: " + type + "\r\n\r\n"
      ].join("");
    return result;
-},
+};
 
 
 postMultipart = function(token, postData, boundary, apiCall, callback){
@@ -268,7 +268,7 @@ postMultipart = function(token, postData, boundary, apiCall, callback){
    }
    request.end(); 
    
-},
+};
 
 initMultipartUpload = function(token, inputFile, reqData, apiCall, fieldName, callback){
    var  
@@ -277,7 +277,7 @@ initMultipartUpload = function(token, inputFile, reqData, apiCall, fieldName, ca
    fileReader = null,
    fileContents = '';
    
-   if(reqData){postData.push(new Buffer(encodeFieldHeader(boundary, "data", JSON.stringify(reqData)), 'ascii'));};
+   if(reqData){postData.push(new Buffer(encodeFieldHeader(boundary, "data", JSON.stringify(reqData)), 'ascii'));}
    postData.push(new Buffer(encodeFileHeader(boundary, _mime.lookup(inputFile), fieldName, inputFile), 'ascii'));
    fileReader = _fs.createReadStream(inputFile, {encoding: 'binary'});
    fileReader.on('data', function(fileData){ fileContents+= fileData;});
@@ -286,7 +286,7 @@ initMultipartUpload = function(token, inputFile, reqData, apiCall, fieldName, ca
       postData.push(new Buffer("\r\n--" + boundary + "--", 'ascii'));
       postMultipart(token, postData, boundary, apiCall, callback);
       });
-},
+};
 
  
  /******************************************************************
@@ -329,7 +329,7 @@ initMultipartUpload = function(token, inputFile, reqData, apiCall, fieldName, ca
  *****************************************************************/ 
 _createFileBasedApp = function(token, inputFile, dataObj, callback){
    initMultipartUpload(token, inputFile, dataObj, 'apps', "file", callback);
-},
+};
 
 /******************************************************************
  *    Updating a file-based application
@@ -367,7 +367,7 @@ _updateFileBasedApp = function(token, inputFile, appId, callback){
 	 callback.error(e.message);
       }
    }
-},
+};
 
 /******************************************************************
  * POST https://build.phonegap.com/api/v1/apps/:id/:icon
@@ -384,7 +384,7 @@ _updateFileBasedApp = function(token, inputFile, appId, callback){
 ******************************************************************/
 _uploadAppIcon = function(token, appId, inputFile, callback){
    initMultipartUpload(token, inputFile, null, 'apps/' + appId + "/icon", "icon", callback);
-},
+};
 
 /******************************************************************
  * 
@@ -418,7 +418,7 @@ _deleteFileBasedApp = function(token, appId, callback){
       }
    });
    
-},
+};
 
 /******************************************************************
  * POST https://build.phonegap.com/api/v1/apps/:id/build
