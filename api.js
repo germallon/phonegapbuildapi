@@ -257,7 +257,7 @@ postMultipart = function(token, postData, boundary, apiCall, callback){
       });
       response.on('error', function(e){
          if(callback.error instanceof Function){
-            callback.error(e.message);
+            callback.error(e.message, response.statusCode);
             }
          return;
       });
@@ -454,7 +454,7 @@ _createAuthToken = function(rawCredentials, callback){
          {
          var errStr = "AJAX error.  Your request could not be completed. Please verify your login credentials and network access.  statusCode: " + response.statusCode;
          if(JSON.parse(body) && JSON.parse(body).error){errStr +="\n" + JSON.parse(body).error;}
-         if(callback.error instanceof Function){callback.error(errStr);}
+         if(callback.error instanceof Function){callback.error(errStr, response.statusCode);}
          return;
          }
       if(callback instanceof Function){
