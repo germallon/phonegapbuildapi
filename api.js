@@ -264,14 +264,14 @@ var postMultipart = function(token, postData, boundary, apiCall, callback){
 
 };
 
-var initMultipartUpload = function(token, inputFile, reqData, apiCall, fieldName, callback){
+var initMultipartUpload = function(token, inputFile, dataObj, apiCall, fieldName, callback){
    var
    boundary = 'bound' + Math.random(),
    postData = [],
    fileReader = null,
    fileContents = '';
 
-   if(reqData){postData.push(new Buffer(encodeFieldHeader(boundary, "data", JSON.stringify(reqData)), 'ascii'));}
+   if(dataObj){postData.push(new Buffer(encodeFieldHeader(boundary, "data", JSON.stringify(dataObj)), 'ascii'));}
    postData.push(new Buffer(encodeFileHeader(boundary, _mime.lookup(inputFile), fieldName, inputFile), 'ascii'));
    fileReader = _fs.createReadStream(inputFile, {encoding: 'binary'});
    fileReader.on('data', function(fileData){ fileContents+= fileData;});
@@ -282,19 +282,76 @@ var initMultipartUpload = function(token, inputFile, reqData, apiCall, fieldName
       });
 };
 
+var initFileUpload = function(token, inputFile, apiCall, callback){
+   var apiPath = '/api/v1/' + apiCall + '?auth_token=' + token;
+   _fs.createReadStream(inputFile).pipe(_req({
+      method: 'PUT',
+      url: 'https://build.phonegap.com' + apiPath
+   }, function(err, res, body){
+      if(err) {
+	 _error(err);
+      } else if (res && (res.statusCode < 200 || res.statusCode >= 300)) {
+	 _error(new Error(res.statusCode.toString() || body));
+      }
+   }))
+   .on('error', _error)
+   .on('end', function(){
+      if(callback instanceof Function){
+	 callback();
+      }
+      else if (callback.success instanceof Function){
+	 callback.success();
+      }
+   });
+
+   function _error(e) {
+      if(callback.error instanceof Function) {
+	 callback.error(e.message);
+      }
+   }
+};
+
+var initWebFormUpload = function(token, dataObj, apiCall, callback) {
+   var apiPath = '/api/v1/' + apiCall + '?auth_token=' + token;
+   console.log("apiPath: " + apiPath);
+   _req({
+      method: 'PUT',
+      url: 'https://build.phonegap.com' + apiPath,
+      form: {data: JSON.stringify(dataObj)}
+   }, function(err, res, body){
+      console.log("err: " + err + ", body:" + _util.inspect(body));
+      if(err) {
+	 _error(err);
+      } else if (res && (res.statusCode < 200 || res.statusCode >= 300)) {
+	 _error(new Error(res.statusCode.toString() || body));
+      } else {
+	 if(callback instanceof Function){
+	    callback(body);
+	 } else if(callback.success instanceof Function){
+	    callback.success(body);
+	 }
+      }
+   });
+   
+   function _error(e) {
+      if(callback.error instanceof Function) {
+	 callback.error(e.message);
+      }
+   }
+};
 
  /******************************************************************
  *
  *  Create a new File-based App.
  *
- *  Required parameters
+ *  Required properties of dataObj:
  *
  *  title: You must specify a title for your app - if a title is also
  *         specified in a config.xml in your package, the one in the
  *         config.xml file will take preference.
  *  create_method: use "file" for this method
  *
- *  Optional parameters
+ *  Optional properties of dataObj:
  *
  *  package: Sets the package identifier for your app. This can also be
  *           done after creation, or in your config.xml file.
@@ -332,35 +389,36 @@ var _createFileBasedApp = function(token, inputFile, dataObj, callback){
  *    can include a new index.html, zip file, or tar.gz file as the
  *    file parameter in your request to update the contents.
  *
+ *  Optional properties of dataObj:
+ *
+ *  - keys: Set the signing keys to use for each platform you wish to sign.
+ * 
  *    PUT https://build.phonegap.com/api/v1/apps/:id
  *****************************************************************/
-var _updateFileBasedApp = function(token, inputFile, appId, callback){
-   var apiPath = '/api/v1/apps/' + appId + '?auth_token=' + token;
-   _fs.createReadStream(inputFile).pipe(_req({
-      method: 'PUT',
-      url: 'https://build.phonegap.com' + apiPath
-   }, function(err, res, body){
-      if(err) {
-	 _error(err);
-      } else if (res && (res.statusCode < 200 || res.statusCode >= 300)) {
-	 _error(new Error(res.statusCode.toString() || body));
-      }
-   }))
-   .on('error', _error)
-   .on('end', function(){
-      if(callback instanceof Function){
-	 callback();
-      }
-      else if (callback.success instanceof Function){
-	 callback.success();
-      }
-   });
-
-   function _error(e) {
-      if(callback.error instanceof Function) {
-	 callback.error(e.message);
-      }
+var _updateFileBasedApp = function(token, inputFile, appId, dataObj, callback){
+   var doUpload = initFileUpload.bind(null, token, inputFile, 'apps/' + appId, callback);
+   if (dataObj.keys) {
+      _uploadAppKeys(token, appId, dataObj, {
+         success: doUpload,
+         error: callback.error
+      });
+   } else {
+      doUpload();
    }
+};
+
+/**
+ * PUT https://build.phonegap.com/api/v1/apps/:id
+ * 
+ * Set the signing keys (and unlock them if the credentials are part
+ * of the request) for the given application.
+ * 
+ * Mandatory parameters of dataObj:
+ * 
+ * - keys
+ */
+var _uploadAppKeys = function(token, appId, dataObj, callback) {
+   initWebFormUpload(token, {keys: dataObj.keys}, 'apps/' + appId, callback);
 };
 
 /******************************************************************
@@ -480,7 +538,16 @@ module.exports = {
    //Write API
    createFileBasedApp:_createFileBasedApp,
    updateFileBasedApp:_updateFileBasedApp,
+   uploadAppKeys: _uploadAppKeys,
    uploadAppIcon: _uploadAppIcon,
    deleteFileBasedApp: _deleteFileBasedApp,
    createAuthToken: _createAuthToken
 };
+
+/*
+ * Local Variables:
+ * mode: js2
+ * js2-basic-offset: 3
+ * indent-tabs-mode: nil
+ * End:
+ */
