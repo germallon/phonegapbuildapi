@@ -1,7 +1,7 @@
 { "name" : "phonegapbuildapi"
 , "description" : "A client interface for the Phonegap Build API."
 , "tags" : ["phonegap", "phonegap build", "phonegap build api", "api client"]
-, "version" : "1.0.1"
+, "version" : "1.0.2"
 , "author" : "German Escallon <germane@adtecinc.com>"
 , "homepage" : "http://github.com/germallon/phonegapbuildapi"
 , "dependencies":{
