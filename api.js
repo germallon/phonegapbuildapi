@@ -506,7 +506,7 @@ var _createAuthToken = function(rawCredentials, callback){
       if((error!==null) || (response.statusCode!=200))
 	 {
 	 var errStr = "AJAX error.  Your request could not be completed. Please verify your login credentials and network access.  statusCode: " + response.statusCode;
-	 if(JSON.parse(body) && JSON.parse(body).error){errStr +="\n" + JSON.parse(body).error;}
+	 if(body && JSON.parse(body) && JSON.parse(body).error){errStr +="\n" + JSON.parse(body).error;}
 	 if(callback.error instanceof Function){callback.error(errStr, response.statusCode);}
 	 return;
 	 }
