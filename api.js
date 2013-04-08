@@ -502,6 +502,7 @@ var _createAuthToken = function(rawCredentials, callback){
       };
 
    _req.post(options, function (error, response, body) {
+      response = response || {};
       if((error!==null) || (response.statusCode!=200))
 	 {
 	 var errStr = "AJAX error.  Your request could not be completed. Please verify your login credentials and network access.  statusCode: " + response.statusCode;
