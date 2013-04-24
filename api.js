@@ -284,29 +284,31 @@ var initMultipartUpload = function(token, inputFile, dataObj, apiCall, fieldName
 
 var initFileUpload = function(token, inputFile, apiCall, callback){
    var apiPath = '/api/v1/' + apiCall + '?auth_token=' + token;
-   _fs.createReadStream(inputFile).pipe(_req({
-      method: 'PUT',
-      url: 'https://build.phonegap.com' + apiPath
-   }, function(err, res, body){
-      if(err) {
-	 _error(err);
-      } else if (res && (res.statusCode < 200 || res.statusCode >= 300)) {
-	 _error(new Error(res.statusCode.toString() || body));
-      }
-   }))
-   .on('error', _error)
-   .on('end', function(){
-      if(callback instanceof Function){
-	 callback();
-      }
-      else if (callback.success instanceof Function){
-	 callback.success();
-      }
-   });
+   try {
+      _fs.createReadStream(inputFile).pipe(_req({
+         method: 'PUT',
+         url: 'https://build.phonegap.com' + apiPath
+      }, function(err, res, body){
+         if(err) {
+	    _error(err);
+         } else if (res && (res.statusCode < 200 || res.statusCode >= 300)) {
+	    _error(new Error(res.statusCode.toString() || body));
+         }
+      }))
+         .on('error', _error);
+   } catch(e) {
+      _error(e);
+   }
 
    function _error(e) {
       if(callback.error instanceof Function) {
-	 callback.error(e.message);
+         if (e instanceof Error) {
+            callback.error(e);
+         } else if (e.message) {
+	    callback.error(new Error(e.message));
+         } else {
+	    callback.error(new Error(e.toString()));
+         }
       }
    }
 };
@@ -314,28 +316,38 @@ var initFileUpload = function(token, inputFile, apiCall, callback){
 var initWebFormUpload = function(token, dataObj, apiCall, callback) {
    var apiPath = '/api/v1/' + apiCall + '?auth_token=' + token;
    console.log("apiPath: " + apiPath);
-   _req({
-      method: 'PUT',
-      url: 'https://build.phonegap.com' + apiPath,
-      form: {data: JSON.stringify(dataObj)}
-   }, function(err, res, body){
-      console.log("err: " + err + ", body:" + _util.inspect(body));
-      if(err) {
-	 _error(err);
-      } else if (res && (res.statusCode < 200 || res.statusCode >= 300)) {
-	 _error(new Error(res.statusCode.toString() || body));
-      } else {
-	 if(callback instanceof Function){
-	    callback(body);
-	 } else if(callback.success instanceof Function){
-	    callback.success(body);
-	 }
-      }
-   });
+   try {
+      _req({
+         method: 'PUT',
+         url: 'https://build.phonegap.com' + apiPath,
+         form: {data: JSON.stringify(dataObj)}
+      }, function(err, res, body){
+         console.log("err: " + err + ", body:" + _util.inspect(body));
+         if(err) {
+	    _error(err);
+         } else if (res && (res.statusCode < 200 || res.statusCode >= 300)) {
+	    _error(new Error(res.statusCode.toString() || body));
+         } else {
+	    if(callback instanceof Function){
+	       callback(body);
+	    } else if(callback.success instanceof Function){
+	       callback.success(body);
+	    }
+         }
+      });
+   } catch(e) {
+      _error(e);
+   }
    
    function _error(e) {
       if(callback.error instanceof Function) {
-	 callback.error(e.message);
+         if (e instanceof Error) {
+            callback.error(e);
+         } else if (e.message) {
+	    callback.error(new Error(e.message));
+         } else {
+	    callback.error(new Error(e.toString()));
+         }
       }
    }
 };
