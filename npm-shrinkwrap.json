@@ -1,0 +1,42 @@
+{
+  "name": "phonegapbuildapi",
+  "version": "1.0.2",
+  "dependencies": {
+    "request": {
+      "version": "2.14.0",
+      "from": "request@2.14.x",
+      "resolved": "https://registry.npmjs.org/request/-/request-2.14.0.tgz",
+      "dependencies": {
+        "form-data": {
+          "version": "0.0.7",
+          "from": "form-data@~0.0.3",
+          "dependencies": {
+            "combined-stream": {
+              "version": "0.0.4",
+              "from": "combined-stream@~0.0.4",
+              "dependencies": {
+                "delayed-stream": {
+                  "version": "0.0.5",
+                  "from": "delayed-stream@0.0.5"
+                }
+              }
+            },
+            "async": {
+              "version": "0.1.22",
+              "from": "async@~0.1.9"
+            }
+          }
+        },
+        "mime": {
+          "version": "1.2.9",
+          "from": "mime@~1.2.7"
+        }
+      }
+    },
+    "mime": {
+      "version": "1.2.9",
+      "from": "mime@1.2.x",
+      "resolved": "https://registry.npmjs.org/mime/-/mime-1.2.9.tgz"
+    }
+  }
+}
